@@ -1,5 +1,4 @@
 {
-    "extends": "tslint-microsoft-contrib",
     "rules": {
         "await-promise": [
             true,
@@ -66,4 +65,3 @@
         ]
     }
 }
-
