@@ -35,7 +35,7 @@
                 "category": "Azure AD Authentication"
             },
             {
-                "command": "azureAd.CreateNewApp",
+                "command": "azureAd.UpdateApp",
                 "title": "Update App Registration details",
                 "category": "Azure AD Authentication"
             },
@@ -53,11 +53,6 @@
                 "command": "azureAd.DeleteApp",
                 "title": "Delete App Registration",
                 "category": "Azure AD Authentication"
-            },
-            {
-                "command": "azureAd.CreateNewApp",
-                "title": "Create new App Registration",
-                "category": "Azure AD Authentication"
             }
         ],
         "viewsContainers": {
@@ -65,7 +60,7 @@
                 {
                     "id": "azureAD",
                     "title": "Azure Active Directory",
-                    "icon": "resources/aad.svg"
+                    "icon": "../resources/dark/aad.svg"
                 }
             ]
         },

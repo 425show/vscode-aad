@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
 
-class AppRegistrationEntry extends vscode.TreeItem {
+export class AppRegistrationEntry extends vscode.TreeItem {
     constructor(
         private appName: string,
         private appId: string,
@@ -24,7 +24,7 @@ class AppRegistrationEntry extends vscode.TreeItem {
     }
 
     private getIconPath(theme: string): string {
-        return path.join('resources', theme, 'app.svg')
+        return path.join(__filename, '..', '..', '..', 'resources', theme, 'app.svg')
     }
 };
 
@@ -32,17 +32,17 @@ export class AppRegistrationDataProvider implements vscode.TreeDataProvider<AppR
     private _onDidChangeTreeData: vscode.EventEmitter<AppRegistrationEntry | undefined> = new vscode.EventEmitter<AppRegistrationEntry | undefined>();
     readonly onDidChangeTreeData: vscode.Event<AppRegistrationEntry | undefined> = this._onDidChangeTreeData.event;
 
-    /*refresh(): void {
-        this._onDidChangeTreeData.fire(this.getAppRegistrationData());
-    }*/
+    refresh(app: AppRegistrationEntry): void {
+        this._onDidChangeTreeData.fire(app);
+    }
 
     getTreeItem(element: AppRegistrationEntry): vscode.TreeItem {
         const treeItem = new vscode.TreeItem(element.name, vscode.TreeItemCollapsibleState.None);
-        treeItem.command = { command: 'azureAd.OpenInPortal', title: "Open App in Azure AD", arguments: [element.id], };
+        treeItem.command = { command: 'azureAd.OpenInPortal', title: "Open App in Azure AD", arguments: [element] };
         return treeItem;
     };
 
-    getChildren(element?: AppRegistrationEntry) {
+    getChildren(element?: AppRegistrationEntry): AppRegistrationEntry[] {
         if (!element) {
             return this.getAppRegistrationData();
         }
@@ -52,9 +52,7 @@ export class AppRegistrationDataProvider implements vscode.TreeDataProvider<AppR
     private getAppRegistrationData(): AppRegistrationEntry[] {
         return azureAdApps;
     }
-}
-
-
+};
 
 const azureAdApps: AppRegistrationEntry[] = [
     new AppRegistrationEntry("test 1", 'bee32d27-242d-4287-8067-65a7d18db831', '87331a93-c272-4e6b-8ca9-3bbdce23d864', "test 1 description"),
