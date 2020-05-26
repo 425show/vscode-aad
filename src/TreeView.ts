@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { Context } from 'vm';
 import * as vscode from 'vscode';
 
 export class AppRegistrationEntry extends vscode.TreeItem {
@@ -8,9 +9,9 @@ export class AppRegistrationEntry extends vscode.TreeItem {
         public tenantId: string,
         public appDescription: string) {
         super(appName, vscode.TreeItemCollapsibleState.None)
-        this.label = appName
+        this.label = `${appName}-${appId}`
         this.id = appId
-        this.tooltip = `${this.appName}-${this.appId}`
+        this.tooltip = `${appName}-${appId}`
         this.description = appDescription
     }
 
@@ -29,8 +30,13 @@ export class AppRegistrationEntry extends vscode.TreeItem {
 };
 
 export class AppRegistrationDataProvider implements vscode.TreeDataProvider<AppRegistrationEntry>{
+
     private _onDidChangeTreeData: vscode.EventEmitter<AppRegistrationEntry | undefined> = new vscode.EventEmitter<AppRegistrationEntry | undefined>();
     readonly onDidChangeTreeData: vscode.Event<AppRegistrationEntry | undefined> = this._onDidChangeTreeData.event;
+
+    constructor(context: Context) {
+        const test = context;
+    }
 
     refresh(app: AppRegistrationEntry): void {
         this._onDidChangeTreeData.fire(app);
@@ -38,7 +44,7 @@ export class AppRegistrationDataProvider implements vscode.TreeDataProvider<AppR
 
     getTreeItem(element: AppRegistrationEntry): vscode.TreeItem {
         const treeItem = new vscode.TreeItem(element.name, vscode.TreeItemCollapsibleState.None);
-        treeItem.command = { command: 'azureAd.OpenInPortal', title: "Open App in Azure AD", arguments: [element] };
+        treeItem.command = { command: 'azureAd.openInPortal', title: "Open App in Azure AD", arguments: [element] };
         return treeItem;
     };
 
@@ -50,6 +56,7 @@ export class AppRegistrationDataProvider implements vscode.TreeDataProvider<AppR
     };
 
     private getAppRegistrationData(): AppRegistrationEntry[] {
+        // TODO - call into Azure AD to get a list of applications
         return azureAdApps;
     }
 };
