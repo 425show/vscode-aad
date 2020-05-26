@@ -35,7 +35,9 @@ export class AppRegistrationDataProvider implements vscode.TreeDataProvider<AppR
     readonly onDidChangeTreeData: vscode.Event<AppRegistrationEntry | undefined> = this._onDidChangeTreeData.event;
 
     constructor(context: Context) {
-        const test = context;
+        // const test = context;
+        // test.
+
     }
 
     refresh(app: AppRegistrationEntry): void {

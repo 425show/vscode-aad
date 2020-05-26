@@ -21,7 +21,8 @@
         "onCommand:azureAd.OpenInPortal",
         "onCommand:azureAd.ConfigureAppAuth",
         "onCommand:azureAd.DeleteApp",
-        "onCommand:azureAd.UpdateApp"
+        "onCommand:azureAd.UpdateApp",
+        "onCommand:azureAd.loginAndTellMeImPretty"
     ],
     "main": "./out/src/extension.js",
     "contributes": {
@@ -70,6 +71,11 @@
                     "light": "resources/light/delete.svg",
                     "dark": "resources/dark/delete.svg"
                 }
+            },
+            {
+                "command": "azureAd.loginAndTellMeImPretty",
+                "title": "Login",
+                "category": "Azure AD Authentication"
             }
         ],
         "viewsContainers": {
@@ -102,7 +108,7 @@
             ],
             "view/item/context": [
                 {
-                    "command": "azure.deleteApp",
+                    "command": "azureAd.deleteApp",
                     "group": "action"
                 }
             ]
@@ -137,7 +143,10 @@
         "webpack-cli": "^3.3.10",
         "open": "^7.0.4"
     },
-    "extensionDependencies": [
-        "ms-vscode.azure-account"
-    ]
+    "extensionDependencies": [],
+    "dependencies": {
+        "azure-arm-resource": "^7.3.0",
+        "ms-rest": "^2.5.4",
+        "ms-rest-azure": "^3.0.0"
+    }
 }
