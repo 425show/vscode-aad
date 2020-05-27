@@ -9,6 +9,7 @@ import { AppRegistrationDataProvider, AppRegistrationEntry } from './TreeView';
 import open = require('open');
 
 // tslint:disable-next-line:max-func-body-length
+// tslint:disable-next-line: typedef
 export function activate() {
 
     console.log('Congratulations, your extension "azure-ad-authentication" is now active!');
@@ -56,24 +57,20 @@ export function activate() {
     });
 
     commands.registerCommand('azureAd.createNewApp', () => {
-        // The code you place here will be executed every time your command is executed
-
-        // Display a message box to the user
         window.showInformationMessage('Create a new App Registration in Azure AD');
     });
-
-    //context.subscriptions.push(disposable);
 }
 
-// this method is called when your extension is deactivated
+// tslint:disable-next-line: typedef
 export function deactivate() { }
 
 
+// tslint:disable-next-line: typedef
 async function openUri(uri: string) {
     await env.openExternal(Uri.parse(uri));
 }
 
-
+// tslint:disable-next-line: typedef
 async function fetchMyDetails(accessToken: any, tenant: string) {
     //const { username, clientId, tokenCache, domain } = <any>session.credentials;
     const cred = new TokenCredentials(accessToken, "Bearer");
@@ -81,6 +78,7 @@ async function fetchMyDetails(accessToken: any, tenant: string) {
 
     const client = new GraphClient(cred, tenant);
     return {
-        me: await client.details.get("me")
+        me: await client.details.get("me"),
+        apps: await client.details.get("applications")
     };
 }
