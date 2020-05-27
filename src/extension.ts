@@ -1,6 +1,6 @@
 import { commands, env, Uri, window } from 'vscode';
 import TokenHandler from './TokenHandler';
-import { AppRegistrationDataProvider, AppRegistrationEntry } from './TreeView';
+import { AppRegistrationDataProvider } from './TreeView';
 
 import open = require('open');
 
@@ -31,13 +31,13 @@ export function activate() {
     commands.registerCommand('azureAd.deleteApp', () => {
     });
 
-    commands.registerCommand('azureAd.openInPortal', async (x: AppRegistrationEntry) => {
+    commands.registerCommand('azureAd.openInPortal', () => {
 
         // TODO Open the App Regisrations in Azure AD in the portal
-        await open('https://aad.portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/Overview/appId/' + x.id);
-        if (x !== undefined) {
-            window.showInformationMessage(`You selected the following item ${x.label} with id ${x.id}`);
-        }
+        // await open('https://aad.portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/Overview/appId/' + x.id);
+        // if (x !== undefined) {
+        //     window.showInformationMessage(`You selected the following item ${x.label} with id ${x.id}`);
+        // }
     });
 
     commands.registerCommand('azureAd.createNewApp', () => {

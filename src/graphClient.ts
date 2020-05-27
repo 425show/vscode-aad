@@ -48,7 +48,7 @@ class Details {
         });
     }
 
-    get(path: string) {
+    get(path: string): Promise<any> {
         return new Promise<{ value: [any] }>((resolve, reject) => {
             this._get(path, (err, result) => {
                 if (err) { reject(err); }
