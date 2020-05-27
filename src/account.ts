@@ -182,7 +182,7 @@ export async function login(clientId: string, environment: AzureEnvironment, adf
         const state = `${updatedPort},${encodeURIComponent(nonce)}`;
         const redirectUrl = adfs ? redirectUrlADFS : redirectUrlAAD;
         //const signInUrl = `${environment.activeDirectoryEndpointUrl}${adfs ? '' : `${tenantId}/`}oauth2/authorize?response_type=code&client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUrl)}&state=${state}&resource=${encodeURIComponent(environment.activeDirectoryResourceId)}&prompt=select_account`;
-        const signInUrl = `${environment.activeDirectoryEndpointUrl}${adfs ? '' : `${tenantId}/`}oauth2/v2.0/authorize?response_type=code&client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUrl)}&state=${state}&scope=openid+profile+offline_access+https://graph.microsoft.com/User.Read&prompt=select_account`;
+        const signInUrl = `${environment.activeDirectoryEndpointUrl}${adfs ? '' : `${tenantId}/`}oauth2/v2.0/authorize?response_type=code&client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUrl)}&state=${state}&scope=openid+profile+offline_access+https://graph.microsoft.com/.default&prompt=select_account`;
         redirectReq.res.writeHead(302, { Location: signInUrl })
         redirectReq.res.end();
 
@@ -348,7 +348,7 @@ export async function tokenWithAuthorizationCode(clientId: string, environment: 
     return new Promise<TokenResponse>((resolve, reject) => {
         const context = new AuthenticationContext(`${environment.activeDirectoryEndpointUrl}${tenantId}`);
         context.acquireTokenWithAuthorizationCode(code, redirectUrl, "https://graph.microsoft.com/", clientId, <any>undefined, (err, response) => {
-            if (err !== undefined) {
+            if (err !== null && err !== undefined) {// !== undefined || err !== null) {
                 reject(err);
             } if (response !== undefined && response.error) {
                 reject(new Error(`${response.error}: ${response.errorDescription}`));
