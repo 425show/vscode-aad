@@ -50,16 +50,16 @@ class Details {
 
     get(path: string) {
         return new Promise<{ value: [any] }>((resolve, reject) => {
-            this._get(path, (err, result, request, response) => {
+            this._get(path, (err, result) => {
                 if (err) { reject(err); }
                 else { resolve(result); }
             });
         });
     }
 
-    _get(path: string, callback: (err: any, result?: any, request?: any, response?: any) => void) {
+    _get(_path: string, callback: (err: any, result?: any, request?: any, response?: any) => void) {
         let client = this.client;
-        let apiVersion = '1.6';
+        //let apiVersion = '1.6';
 
         // Construct URL
         let baseUrl = this.client.baseUri;

@@ -1,6 +1,6 @@
 import { TokenCredentials } from 'ms-rest';
 import { AzureEnvironment } from 'ms-rest-azure';
-import { commands, env, ExtensionContext, Uri, window } from 'vscode';
+import { commands, env, Uri, window } from 'vscode';
 import * as account from './account';
 import { GraphClient } from './graphClient';
 import { AppRegistrationDataProvider, AppRegistrationEntry } from './TreeView';
@@ -9,12 +9,12 @@ import { AppRegistrationDataProvider, AppRegistrationEntry } from './TreeView';
 import open = require('open');
 
 // tslint:disable-next-line:max-func-body-length
-export function activate(context: ExtensionContext) {
+export function activate() {
 
     console.log('Congratulations, your extension "azure-ad-authentication" is now active!');
 
     window.createTreeView('azureActiveDirectoryAuth', {
-        treeDataProvider: new AppRegistrationDataProvider(context)
+        treeDataProvider: new AppRegistrationDataProvider()
     });
 
     commands.registerCommand('azureAd.selectSubscription', (x) => {

@@ -1,5 +1,4 @@
 import * as path from 'path';
-import { Context } from 'vm';
 import * as vscode from 'vscode';
 
 export class AppRegistrationEntry extends vscode.TreeItem {
@@ -9,9 +8,9 @@ export class AppRegistrationEntry extends vscode.TreeItem {
         public tenantId: string,
         public appDescription: string) {
         super(appName, vscode.TreeItemCollapsibleState.None)
-        this.label = `${appName}-${appId}`
-        this.id = appId
-        this.tooltip = `${appName}-${appId}`
+        this.label = `${appName}-${this.appId}`
+        this.id = this.appId
+        this.tooltip = `${appName}-${this.appId}`
         this.description = appDescription
     }
 
@@ -34,11 +33,11 @@ export class AppRegistrationDataProvider implements vscode.TreeDataProvider<AppR
     private _onDidChangeTreeData: vscode.EventEmitter<AppRegistrationEntry | undefined> = new vscode.EventEmitter<AppRegistrationEntry | undefined>();
     readonly onDidChangeTreeData: vscode.Event<AppRegistrationEntry | undefined> = this._onDidChangeTreeData.event;
 
-    constructor(context: Context) {
+    /*constructor(context: Context) {
         // const test = context;
         // test.
 
-    }
+    }*/
 
     refresh(app: AppRegistrationEntry): void {
         this._onDidChangeTreeData.fire(app);
