@@ -4,7 +4,6 @@ import * as fs from 'fs';
 import * as http from 'http';
 import * as https from 'https';
 import { AzureEnvironment } from 'ms-rest-azure';
-import * as net from 'net';
 import * as path from 'path';
 import * as url from 'url';
 import * as vscode from 'vscode';
@@ -207,7 +206,7 @@ export async function login(clientId: string, environment: AzureEnvironment, adf
     }
 }
 
-function createTerminateServer(server: http.Server) {
+/*function createTerminateServer(server: http.Server) {
     const sockets: Record<number, net.Socket> = {};
     let socketCount = 0;
     server.on('connection', socket => {
@@ -226,6 +225,7 @@ function createTerminateServer(server: http.Server) {
         return result;
     };
 }
+*/
 
 interface Deferred<T> {
     resolve: (result: T | Promise<T>) => void;
@@ -356,12 +356,11 @@ export async function tokenWithAuthorizationCode(clientId: string, environment: 
     });
 }
 
+/*
 export async function getTokenForResource(resource: string, clientId: string, environment: AzureEnvironment, tenantId: string) {
     const context = new AuthenticationContext(`${environment.activeDirectoryEndpointUrl}${tenantId}`);
-
-
 }
-
+*/
 if (require.main === module) {
     //login('aebc6443-996d-45c2-90f0-388ff96faa56', AzureEnvironment.Azure, false, 'common', async uri => console.log(`Open: ${uri}`), async () => console.log('Browser did not connect to local server within 10 seconds.')).catch(console.error);
     //login('641d7b63-e779-4b23-9ef1-26481c4e3f63', AzureEnvironment.Azure, false, 'common', async uri => console.log(`Open: ${uri}`), async () => console.log('Browser did not connect to local server within 10 seconds.')).catch(console.error);
