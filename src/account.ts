@@ -14,7 +14,7 @@ const redirectUrlADFS = `http://127.0.0.1:${portADFS}/`;
 
 export function isADFS(environment: AzureEnvironment) {
     const u = url.parse(environment.activeDirectoryEndpointUrl);
-    const pathname = (u.pathname || '').toLowerCase();
+    const pathname = (u.pathname ? u.pathname : '').toLowerCase();
     return pathname === '/adfs' || pathname.startsWith('/adfs/');
 }
 
@@ -123,6 +123,7 @@ async function loginWithoutLocalServer(clientId: string, environment: AzureEnvir
     const callbackUri = await vscode.env.asExternalUri(vscode.Uri.parse(`${vscode.env.uriScheme}://ms-vscode.azure-account`));
     const callback = redirectUrlAAD;
     const nonce = crypto.randomBytes(16).toString('base64');
+    // tslint:disable-next-line: strict-boolean-expressions
     const port = (callbackUri.authority.match(/:([0-9]*)$/) || [])[1] || (callbackUri.scheme === 'https' ? 443 : 80);
     const callbackEnvironment = getCallbackEnvironment(callbackUri);
     const state = `${callbackEnvironment}${port},${encodeURIComponent(nonce)},${encodeURIComponent(callbackUri.query)}`;
@@ -133,7 +134,7 @@ async function loginWithoutLocalServer(clientId: string, environment: AzureEnvir
     });
     vscode.env.openExternal(uri);
 
-    const timeoutPromise = new Promise((resolve: (value: TokenResponse) => void, reject) => {
+    const timeoutPromise = new Promise((_resolve: (value: TokenResponse) => void, reject) => {
         const wait = setTimeout(() => {
             clearTimeout(wait);
             reject('Login timed out.');
@@ -148,7 +149,7 @@ export async function login(clientId: string, environment: AzureEnvironment, adf
         return loginWithoutLocalServer(clientId, environment, adfs, tenantId);
     }
 
-    if (adfs && terminateServer) {
+    if (adfs && terminateServer !== undefined) {
         await terminateServer();
     }
 
@@ -167,20 +168,21 @@ export async function login(clientId: string, environment: AzureEnvironment, adf
         const redirectReq = await redirectPromise;
         if ('err' in redirectReq) {
             const { err, res } = redirectReq;
-            res.writeHead(302, { Location: `/?error=${encodeURIComponent(err && err.message || 'Unkown error')}` });
+            res.writeHead(302, { Location: `/?error=${encodeURIComponent(err && err.message ? err.message : 'Unkown error')}` });
             res.end();
             throw err;
         }
 
         clearTimeout(redirectTimer);
-        const host = redirectReq.req.headers.host || '';
+        const host = redirectReq.req.headers.host ? redirectReq.req.headers.host : '';
+        // tslint:disable-next-line: strict-boolean-expressions
         const updatedPortStr = (/^[^:]+:(\d+)$/.exec(Array.isArray(host) ? host[0] : host) || [])[1];
         const updatedPort = updatedPortStr ? parseInt(updatedPortStr, 10) : port;
 
         const state = `${updatedPort},${encodeURIComponent(nonce)}`;
         const redirectUrl = adfs ? redirectUrlADFS : redirectUrlAAD;
         //const signInUrl = `${environment.activeDirectoryEndpointUrl}${adfs ? '' : `${tenantId}/`}oauth2/authorize?response_type=code&client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUrl)}&state=${state}&resource=${encodeURIComponent(environment.activeDirectoryResourceId)}&prompt=select_account`;
-        const signInUrl = `${environment.activeDirectoryEndpointUrl}${adfs ? '' : `${tenantId}/`}oauth2/v2.0/authorize?response_type=code&client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUrl)}&state=${state}&scope=openid+profile+offline_access+https://graph.microsoft.com/User.Read&prompt=select_account`;
+        const signInUrl = `${environment.activeDirectoryEndpointUrl}${adfs ? '' : `${tenantId}/`}oauth2/v2.0/authorize?response_type=code&client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUrl)}&state=${state}&scope=openid+profile+offline_access+https://graph.microsoft.com/.default&prompt=select_account`;
         redirectReq.res.writeHead(302, { Location: signInUrl })
         redirectReq.res.end();
 
@@ -195,7 +197,7 @@ export async function login(clientId: string, environment: AzureEnvironment, adf
             res.end();
             return tokenResponse;
         } catch (err) {
-            res.writeHead(302, { Location: `/?error=${encodeURIComponent(err && err.message || 'Unkown error')}` });
+            res.writeHead(302, { Location: `/?error=${encodeURIComponent(err && err.message ? err.message : 'Unkown error')}` });
             res.end();
             throw err;
         }
@@ -232,6 +234,7 @@ interface Deferred<T> {
     reject: (reason: any) => void;
 }
 
+// tslint:disable-next-line: typedef
 function createServer(nonce: string) {
     type RedirectResult = { req: any; res: http.ServerResponse; } | { err: any; res: http.ServerResponse; };
     let deferredRedirect: Deferred<RedirectResult>;
@@ -244,14 +247,15 @@ function createServer(nonce: string) {
     const codeTimer = setTimeout(() => {
         deferredCode.reject(new Error('Timeout waiting for code'));
     }, 5 * 60 * 1000);
+    // tslint:disable-next-line: typedef
     function cancelCodeTimer() {
         clearTimeout(codeTimer);
     }
-    const server = http.createServer(function (req, res) {
+    const server = http.createServer(function (req: http.IncomingMessage, res: http.ServerResponse) {
         const reqUrl = url.parse(req.url!, /* parseQueryString */ true);
         switch (reqUrl.pathname) {
             case '/signin':
-                const receivedNonce = (reqUrl.query.nonce || '').toString().replace(/ /g, '+');
+                const receivedNonce = (reqUrl.query.nonce ? reqUrl.query.nonce : '').toString().replace(/ /g, '+');
                 if (receivedNonce === nonce) {
                     deferredRedirect.resolve({ req, res });
                 } else {
@@ -327,27 +331,26 @@ async function callback(nonce: string, reqUrl: any): Promise<string> {
     let error = reqUrl.query.error_description || reqUrl.query.error;
 
     if (!error) {
-        const state = reqUrl.query.state || '';
-        const receivedNonce = (state.split(',')[1] || '').replace(/ /g, '+');
+        const state = reqUrl.query.state ? reqUrl.query.state : '';
+        const receivedNonce = (state.split(',')[1] ? state.split(',')[1] : '').replace(/ /g, '+');
         if (receivedNonce !== nonce) {
             error = 'Nonce does not match.';
         }
     }
-    // TYPESCRIPT I DO NOT CARE IF IT IS NULL
     const code = reqUrl.query.code;
     if (!error && code) {
         return code;
     }
-    throw new Error(error || 'No code received.');
+    throw new Error(error ? error : 'No code received.');
 }
 
 export async function tokenWithAuthorizationCode(clientId: string, environment: AzureEnvironment, redirectUrl: string, tenantId: string, code: string) {
     return new Promise<TokenResponse>((resolve, reject) => {
         const context = new AuthenticationContext(`${environment.activeDirectoryEndpointUrl}${tenantId}`);
         context.acquireTokenWithAuthorizationCode(code, redirectUrl, "https://graph.microsoft.com/", clientId, <any>undefined, (err, response) => {
-            if (err) {
+            if (err !== null && err !== undefined) {// !== undefined || err !== null) {
                 reject(err);
-            } if (response && response.error) {
+            } if (response !== undefined && response.error) {
                 reject(new Error(`${response.error}: ${response.errorDescription}`));
             } else {
                 resolve(<TokenResponse>response);

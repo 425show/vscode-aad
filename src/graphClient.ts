@@ -48,7 +48,7 @@ class Details {
         });
     }
 
-    get(path: string) {
+    get(path: string): Promise<any> {
         return new Promise<{ value: [any] }>((resolve, reject) => {
             this._get(path, (err, result) => {
                 if (err) { reject(err); }
@@ -63,9 +63,7 @@ class Details {
 
         // Construct URL
         let baseUrl = this.client.baseUri;
-        let requestUrl = baseUrl + (baseUrl.endsWith('/') ? '' : '/') + "v1.0/me";// "{tenantID}/me";
-        //requestUrl = requestUrl.replace('{tenantID}', encodeURIComponent(this.client.tenantID));
-        //requestUrl += '?' + 'api-version=' + encodeURIComponent(apiVersion);
+        let requestUrl = baseUrl + (baseUrl.endsWith('/') ? '' : '/') + "v1.0/" + _path;
 
         // Create HTTP transport objects
         let httpRequest: any = new msRest.WebResource();
