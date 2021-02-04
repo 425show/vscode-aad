@@ -45,12 +45,12 @@ export class AppRegistrationMetadataItem extends AppRegistrationEntityItem {
 
 export class AppRegistrationRedirectUriItem extends AppRegistrationEntityItem {
     // private uri: string;
-    // private type: string;
+    private type: string;
 
     constructor(uri: string, type: string) {
         super(uri, "AppRegistrationRedirectUriItem");
         // this.uri = uri;
-        // this.type = type;
+        this.type = type;
     }
 }
 

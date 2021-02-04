@@ -2,7 +2,7 @@ import { commands, env, Uri, window } from 'vscode';
 import TokenHandler from './TokenHandler';
 import { AppRegistrationDataProvider } from './TreeView';
 
-import open = require('open');
+//import open = require('open');
 
 // tslint:disable-next-line:max-func-body-length
 // tslint:disable-next-line: typedef

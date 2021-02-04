@@ -1,4 +1,5 @@
 import graph = require('@microsoft/microsoft-graph-client');
+require('isomorphic-fetch');
 
 function getAuthenticatedClient(accessToken: string): graph.Client {
     const client = graph.Client.init({
