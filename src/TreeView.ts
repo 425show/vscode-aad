@@ -1,6 +1,7 @@
 import { TokenCredentials } from 'ms-rest';
 import * as path from 'path';
 import * as vscode from 'vscode';
+import * as graph from './graph';
 import { GraphClient } from './graphClient';
 import TokenHandler from "./TokenHandler";
 
@@ -114,7 +115,9 @@ export class AppRegistrationDataProvider implements vscode.TreeDataProvider<AppR
         // TODO - call into Azure AD to get a list of applications
         var token = await this.handler.getAccessToken();
         var graphClient = new GraphClient(new TokenCredentials(token), "jpd.ms");
-        var apps = await graphClient.details.get("applications?$top=10");
+        //var apps = await graphClient.details.get("applications?$top=10");
+
+        var apps = await graph.GetAzureADAppRegistrations(token);
 
         var azureAdApps: AppRegistrationMetadataItem[] = [];
         for (var i = 0; i < apps.value.length; i++) {
