@@ -14,30 +14,18 @@ export function activate() {
         treeDataProvider: new AppRegistrationDataProvider(new TokenHandler())
     });
 
-    commands.registerCommand('azureAd.selectSubscription', (x) => {
-        console.log(x);
-        // Display a message box to the user
-        window.showInformationMessage('Select the Azure Subscription!');
-    });
-
-    commands.registerCommand('azureAd.loginAndTellMeImPretty', async () => {
-        //var token = await getAccessToken();
-
-    });
-
     commands.registerCommand('azureAd.refreshEntry', () => {
     });
 
     commands.registerCommand('azureAd.deleteApp', () => {
     });
 
-    commands.registerCommand('azureAd.openInPortal', () => {
+    commands.registerCommand('azureAd.openInPortal', async (x) => {
 
-        // TODO Open the App Regisrations in Azure AD in the portal
-        // await open('https://aad.portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/Overview/appId/' + x.id);
-        // if (x !== undefined) {
-        //     window.showInformationMessage(`You selected the following item ${x.label} with id ${x.id}`);
-        // }
+        await openUri(`https://aad.portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/Overview/appId/${x.appId}/IsMSAApp/`);
+        if (x !== undefined) {
+            window.showInformationMessage(`You selected the following item ${x.label} with id ${x.id}`);
+        }
     });
 
     commands.registerCommand('azureAd.createNewApp', () => {

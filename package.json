@@ -36,10 +36,6 @@
                 }
             },
             {
-                "command": "azureAd.selectSubscription",
-                "title": "Select Azure Subscription..."
-            },
-            {
                 "command": "azureAd.createNewApp",
                 "title": "Create new App Registration",
                 "category": "Azure AD Authentication",
@@ -81,17 +77,17 @@
         "viewsContainers": {
             "activitybar": [
                 {
-                    "id": "azureAD",
+                    "id": "azuread-explorer",
                     "title": "Azure Active Directory",
                     "icon": "resources/dark/aad.svg"
                 }
             ]
         },
         "views": {
-            "explorer": [
+            "azuread-explorer": [
                 {
                     "id": "azureActiveDirectoryAuth",
-                    "name": "AAD Authentication"
+                    "name": "Azure AD"
                 }
             ]
         },
@@ -109,6 +105,14 @@
             "view/item/context": [
                 {
                     "command": "azureAd.deleteApp",
+                    "group": "action"
+                },
+                {
+                    "command": "azureAd.updateApp",
+                    "group": "action"
+                },
+                {
+                    "command": "azureAd.openInPortal",
                     "group": "action"
                 }
             ]

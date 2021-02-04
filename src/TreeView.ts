@@ -25,10 +25,10 @@ export class AppRegistrationMetadataItem extends AppRegistrationEntityItem {
         public appDescription: string) {
         super(appName, "AppRegistrationMetadataItem");
 
-        this.label = `${appName}-${this.appId}`
+        this.label = `${appName}-${this.appId}`;
         this.id = this.objectId;
-        this.tooltip = `${appName}-${this.appId}`
-        this.description = appDescription
+        this.tooltip = `${appName}-${this.appId}`;
+        this.description = appDescription;
     }
 
     iconPath: any = {
@@ -37,11 +37,10 @@ export class AppRegistrationMetadataItem extends AppRegistrationEntityItem {
     }
 
     private getIconPath(theme: string): string {
-        return path.join(__filename, '..', '..', '..', 'resources', theme, 'app.svg')
+        let iconPath = path.join(__filename, '..', '..', '..', 'resources', theme, 'app.svg')
+        return iconPath;
     }
 };
-
-
 
 export class AppRegistrationRedirectUriItem extends AppRegistrationEntityItem {
     // private uri: string;
@@ -61,8 +60,8 @@ export class AppRegistrationDataProvider implements vscode.TreeDataProvider<AppR
         this.handler = ok;
     }
 
-    private _onDidChangeTreeData: vscode.EventEmitter<AppRegistrationEntityItem | undefined> = new vscode.EventEmitter<AppRegistrationEntityItem | undefined>();
-    readonly onDidChangeTreeData: vscode.Event<AppRegistrationEntityItem | undefined> = this._onDidChangeTreeData.event;
+    private _onDidChangeTreeData = new vscode.EventEmitter<AppRegistrationEntityItem | undefined>();
+    public readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
 
     refresh(app: AppRegistrationEntityItem): void {
         this._onDidChangeTreeData.fire(app);
@@ -88,7 +87,7 @@ export class AppRegistrationDataProvider implements vscode.TreeDataProvider<AppR
                     var item = element as AppRegistrationMetadataItem;
                     var token = await this.handler.getAccessToken();
                     var graphClient = new GraphClient(new TokenCredentials(token), "jpd.ms");
-                    var app = await graphClient.details.get(`applications/${item.id}?$select=web`); // it's like powershell!
+                    var app = await graphClient.details.get(`applications/${item.id}?$select=web`);
                     for (var i = 0; i < app.web.redirectUris.length; i++) {
                         uris.push(new AppRegistrationRedirectUriItem(app.web.redirectUris[i], "web"));
                     }
@@ -100,23 +99,10 @@ export class AppRegistrationDataProvider implements vscode.TreeDataProvider<AppR
                 return [];
                 break;
         }
-
-
-        // var token = await this.handler.getAccessToken();
-        // var graphClient = new GraphClient(new TokenCredentials(token), "jpd.ms");
-        // var app = await graphClient.details.get("applications/" + element.id);
-
-
-
-
     };
 
     private async getAppRegistrationData(): Promise<AppRegistrationMetadataItem[]> {
-        // TODO - call into Azure AD to get a list of applications
         var token = await this.handler.getAccessToken();
-        var graphClient = new GraphClient(new TokenCredentials(token), "jpd.ms");
-        //var apps = await graphClient.details.get("applications?$top=10");
-
         var apps = await graph.GetAzureADAppRegistrations(token);
 
         var azureAdApps: AppRegistrationMetadataItem[] = [];
