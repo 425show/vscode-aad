@@ -2,8 +2,8 @@ import { TokenCredentials } from 'ms-rest';
 import { AzureEnvironment } from 'ms-rest-azure';
 import { window } from 'vscode';
 import * as account from './account';
-import { openUri } from './extension';
 import { GraphClient } from './graphClient';
+import { openUri } from './util';
 
 // todo: move this
 // todo: handle refresh token
