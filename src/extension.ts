@@ -1,35 +1,33 @@
-import { ExtensionContext } from 'vscode';
+import { ExtensionContext, ProviderResult, Uri, window } from 'vscode';
+import { MsalAuthenticator, MsalMementoCache } from './authentication';
 import { registerCommands } from "./commands";
+import { EXTENSION_NAME } from './constants';
 import { registerTreeProvider } from './tree';
 
-// tslint:disable-next-line:max-func-body-length
-// tslint:disable-next-line: typedef
 export function activate(context: ExtensionContext) {
+    console.log(`${EXTENSION_NAME} is running`);
 
-    console.log('Congratulations, your extension "azure-ad-authentication" is now active!');
+    registerProtocolHandlersForAuthentication();
+    var msal = configureStorageAndAuthentication(context);
 
     //Initialize all the commands
     registerCommands(context);
-
     //Register the tree provider that shows the data
-    registerTreeProvider(context);
-
-    /*
-    commands.registerCommand('azureAd.refreshEntry', () => {
-
-    });
-
-    commands.registerCommand('azureAd.deleteApp', () => {
-    });
-
-    commands.registerCommand('azureAd.createNewApp', () => {
-        window.showInformationMessage('Create a new App Registration in Azure AD');
-    });
-    */
+    registerTreeProvider(context, msal);
 }
 
 export function deactivate() { }
 
+export function registerProtocolHandlersForAuthentication() {
+    console.log("registering return handler");
+    window.registerUriHandler({
+        handleUri(uri: Uri): ProviderResult<void> {
+            console.debug("return handler running");
+            MsalAuthenticator.getInstance().EndLogin(uri);//.then(x => console.debug(`end login completed`));
+        }
+    });
+}
 
-
-
+export function configureStorageAndAuthentication(context: ExtensionContext): MsalAuthenticator {
+    return MsalAuthenticator.getInstance(new MsalMementoCache(context));
+}

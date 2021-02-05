@@ -1,6 +1,7 @@
 {
-    "name": "azure-ad-authentication",
-    "displayName": "Azure AD Authentication",
+    "name": "vscode-aad-explorer",
+    "publisher": "425show",
+    "displayName": "Microsoft Identity Platform explorer",
     "description": "Add Azure Active Directory authentication to your app",
     "version": "0.0.1",
     "engines": {
@@ -22,11 +23,16 @@
         "onCommand:azureAd.ConfigureAppAuth",
         "onCommand:azureAd.DeleteApp",
         "onCommand:azureAd.UpdateApp",
-        "onCommand:azureAd.loginAndTellMeImPretty"
+        "onCommand:azureAd.LoginAndTellMeImPretty"
     ],
     "main": "./out/src/extension.js",
     "contributes": {
         "commands": [
+            {
+                "command": "azureAd.LoginAndTellMeImPretty",
+                "title": "Login",
+                "category": "Azure AD Authentication"
+            },
             {
                 "command": "azureAd.refreshEntry",
                 "title": "Refresh",
@@ -77,17 +83,23 @@
         "viewsContainers": {
             "activitybar": [
                 {
-                    "id": "azuread-explorer",
+                    "id": "vscode-aad-explorer",
                     "title": "Azure Active Directory",
                     "icon": "resources/dark/aad.svg"
                 }
             ]
         },
+        "viewsWelcome": [
+            {
+                "view": "vscode-aad-explorer.apps",
+                "contents": "Login to get started.\n[Login with work or school](command:azureAd.LoginAndTellMeImPretty)"
+            }
+        ],
         "views": {
-            "azuread-explorer": [
+            "vscode-aad-explorer": [
                 {
-                    "id": "azuread-explorer.apps",
-                    "name": "Azure AD"
+                    "id": "vscode-aad-explorer.apps",
+                    "name": "Apps"
                 }
             ]
         },
@@ -150,9 +162,10 @@
     },
     "extensionDependencies": [],
     "dependencies": {
+        "@azure/msal-node": "^1.0.0-beta.5",
         "@microsoft/microsoft-graph-client": "^2.2.1",
-        "isomorphic-fetch": "^3.0.0",
         "azure-arm-resource": "^7.4.0",
+        "isomorphic-fetch": "^3.0.0",
         "ms-rest": "^2.5.4",
         "ms-rest-azure": "^3.0.0"
     }

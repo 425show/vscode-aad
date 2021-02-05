@@ -5,6 +5,7 @@ import {
     TreeItemCollapsibleState,
     window
 } from 'vscode';
+import { MsalAuthenticator } from '../authentication';
 import { EXTENSION_NAME } from '../constants';
 import * as graph from '../graph';
 import TokenHandler from "../TokenHandler";
@@ -34,7 +35,6 @@ export class AppRegistrationDataProvider implements TreeDataProvider<AppRegistra
     getTreeItem(element: AppRegistrationEntityItem): TreeItem {
         const treeItem = new TreeItem(element.name, TreeItemCollapsibleState.Collapsed);
         //treeItem.command = { command: 'azureAd.openInPortal', title: "Open App in Azure AD", arguments: [element] };
-
         return treeItem;
     };
 
@@ -82,10 +82,8 @@ export class AppRegistrationDataProvider implements TreeDataProvider<AppRegistra
     }
 };
 
-export function registerTreeProvider(
-    extensionContext: ExtensionContext
-) {
-    const treeDataProvider = new AppRegistrationDataProvider(new TokenHandler(), extensionContext);
+export function registerTreeProvider(extensionContext: ExtensionContext, msal: MsalAuthenticator) {
+    const treeDataProvider = new AppRegistrationDataProvider(new TokenHandler(msal), extensionContext);
     window.createTreeView(`${EXTENSION_NAME}.apps`, {
         showCollapseAll: true,
         treeDataProvider,
