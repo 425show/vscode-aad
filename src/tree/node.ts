@@ -1,6 +1,5 @@
 import { ExtensionContext, TreeItem } from "vscode";
 import { getIconPath } from "../util";
-//import { EXTENSION_NAME } from "./constants";
 
 export class AppRegistrationEntityItem extends TreeItem {
     public objectType: string;
@@ -16,7 +15,7 @@ export class AppRegistrationEntityItem extends TreeItem {
 export class AppRegistrationMetadataItem extends AppRegistrationEntityItem {
     constructor(
         appName: string,
-        private appId: string,
+        public appId: string,
         private objectId: string,
         public tenantId: string,
         public appDescription: string,
@@ -25,7 +24,7 @@ export class AppRegistrationMetadataItem extends AppRegistrationEntityItem {
 
         this.label = `${appName}-${this.appId}`;
         this.id = this.objectId;
-        this.tooltip = `${appName}-${this.appId}`;
+        this.tooltip = `${appName}-${this.objectId}`;
         this.description = appDescription;
         this.iconPath = getIconPath(extensionContext, "resources/app.svg")
     }

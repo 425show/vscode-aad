@@ -41,6 +41,12 @@ export async function getAzureADAppRegistrations(accessToken: string) {
     return apps;
 }
 
+export async function getTenant(accessToken: string): Promise<MicrosoftGraph.Organization> {
+    const client = getAuthenticatedClient(accessToken);
+    return await client
+        .api('/organization')
+        .get()
+}
 ///Get the Redirect URis for an App that's configured with Web authentication
 export async function getRedirectUrisForSPA(accessToken: string, appId?: string) {
     const client = getAuthenticatedClient(accessToken);
@@ -85,6 +91,13 @@ export async function updateRedirectUri(accessToken: string, appId: string, oldU
         .patch(spaApp);
 }
 
+export async function deleteAppRegistration(accessToken: string, appId: string) {
+    const client = getAuthenticatedClient(accessToken);
+    return await client
+        .api(`/applications/${appId}`)
+        .delete();
+}
+
 async function getSpaAppForAppRegistration(accessToken: string, appId: string,): Promise<MicrosoftGraph.SpaApplication> {
     const client = getAuthenticatedClient(accessToken);
     var spaApp: MicrosoftGraph.SpaApplication = await client
@@ -96,9 +109,7 @@ async function getSpaAppForAppRegistration(accessToken: string, appId: string,):
 
 function removeRedirectUriFromSpaApp(spaApp: MicrosoftGraph.WebApplication, uriToRemove: string): MicrosoftGraph.SpaApplication {
     if (spaApp.redirectUris && spaApp.redirectUris?.length > 0) {
-
         for (var i = 0; i < spaApp.redirectUris?.length; i++) {
-
             if (spaApp.redirectUris[i] === uriToRemove) {
                 spaApp.redirectUris.splice(i, 1);
                 i--;

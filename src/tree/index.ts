@@ -67,6 +67,7 @@ export class AppRegistrationDataProvider implements TreeDataProvider<AppRegistra
     private async getAppRegistrationData(): Promise<AppRegistrationMetadataItem[]> {
         var token = await this.handler.getAccessToken();
         var apps = await graph.getAzureADAppRegistrations(token);
+        var tenant = await graph.getTenant(token);
 
         var azureAdApps: AppRegistrationMetadataItem[] = [];
         apps.forEach(element => {
@@ -74,7 +75,7 @@ export class AppRegistrationDataProvider implements TreeDataProvider<AppRegistra
                 element.name,
                 element.appId,
                 element.objectId,
-                "tbd",
+                tenant.id!,
                 element.desc,
                 this.extensionContext));
         });

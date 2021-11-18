@@ -11,7 +11,7 @@ export function activate(context: ExtensionContext) {
     var msal = configureStorageAndAuthentication(context);
 
     //Initialize all the commands
-    registerCommands(context);
+    registerCommands(context, msal);
     //Register the tree provider that shows the data
     registerTreeProvider(context, msal);
 }

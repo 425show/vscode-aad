@@ -66,6 +66,14 @@ export class MsalAuthenticator {
         return this.instance;
     }
 
+    //msal logout
+    public async Logout() {
+        console.debug("logging out...");
+        const redirectUrl = await vscode.env.asExternalUri(vscode.Uri.parse(`${vscode.env.uriScheme}://${PUBLISHER_NAME}.${EXTENSION_NAME}/logout`));
+        var logoutUri = `https://login.microsoftonline.com/common/oauth2/v2.0/logout?${redirectUrl}`;
+        await vscode.env.openExternal(vscode.Uri.parse(logoutUri));
+    }
+
     public async StartLogin(): Promise<void> {
         const cryptoProvider = new CryptoProvider();
         var pkceCodes = await cryptoProvider.generatePkceCodes();
@@ -83,19 +91,12 @@ export class MsalAuthenticator {
             codeChallengeMethod: this.pkceCodes.challengeMethod
         };
 
-        //console.debug(authCodeUrlParameters);
-
         var url = await this.client.getAuthCodeUrl(authCodeUrlParameters);
-        //console.debug(url);
-
         await vscode.env.openExternal(vscode.Uri.parse(url));
     }
 
     public async EndLogin(uriData: vscode.Uri): Promise<string> {
-        //console.debug(`endlogin: ${uriData}`);
         var code = uriData.query.split('code=')[1].split('&')[0];
-        // console.debug(`code: ${code}`);
-        // console.debug(`verifier: ${this.pkceCodes.verifier}`);
         var token = await this.client.acquireTokenByCode({
             scopes: MSAL_SCOPES.scopes,
             code: code,
@@ -103,7 +104,6 @@ export class MsalAuthenticator {
             redirectUri: `${vscode.env.uriScheme}://${PUBLISHER_NAME}.${EXTENSION_NAME}/auth-end`
         });
         this.homeAccountId = token?.account?.homeAccountId;
-        //console.debug(`token: ${token?.accessToken}`);
         return token ? token.accessToken : "";
     }
 

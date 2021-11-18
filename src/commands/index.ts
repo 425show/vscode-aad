@@ -1,18 +1,13 @@
-import { commands, ExtensionContext } from "vscode";
+import { ExtensionContext } from "vscode";
 import { MsalAuthenticator } from "../authentication";
-import { COMMAND_NAME } from "../constants";
+import { registerDeleteAppCommand } from "./delete";
+import { registerLoginCommand } from "./login";
+import { registerLogoutCommand } from "./logout";
 import { registerOpenInPortalCommand } from "./openInPortal";
 
-export function registerCommands(context: ExtensionContext) {
+export function registerCommands(context: ExtensionContext, msal: MsalAuthenticator) {
     registerOpenInPortalCommand(context);
     registerLoginCommand(context);
-}
-
-export function registerLoginCommand(context: ExtensionContext) {
-    context.subscriptions.push(
-        commands.registerCommand(`${COMMAND_NAME}.LoginAndTellMeImPretty`, async () => {
-            var msal = MsalAuthenticator.getInstance();
-            await msal.StartLogin();
-        })
-    );
+    registerDeleteAppCommand(context, msal);
+    registerLogoutCommand(context, msal);
 }
