@@ -2,7 +2,9 @@ import { ExtensionContext, ProviderResult, Uri, window } from 'vscode';
 import { MsalAuthenticator, MsalMementoCache } from './authentication';
 import { registerCommands } from "./commands";
 import { EXTENSION_NAME } from './constants';
-import { registerTreeProvider } from './tree';
+import { AppRegistrationDataProvider, registerTreeProvider } from './tree';
+
+let treeProvider: AppRegistrationDataProvider;
 
 export function activate(context: ExtensionContext) {
     console.log(`${EXTENSION_NAME} is running`);
@@ -12,8 +14,9 @@ export function activate(context: ExtensionContext) {
 
     //Initialize all the commands
     registerCommands(context, msal);
+
     //Register the tree provider that shows the data
-    registerTreeProvider(context, msal);
+    treeProvider = registerTreeProvider(context, msal);
 }
 
 export function deactivate() { }
@@ -23,7 +26,10 @@ export function registerProtocolHandlersForAuthentication() {
     window.registerUriHandler({
         handleUri(uri: Uri): ProviderResult<void> {
             console.debug("return handler running");
-            MsalAuthenticator.getInstance().EndLogin(uri);//.then(x => console.debug(`end login completed`));
+            MsalAuthenticator.getInstance().EndLogin(uri)
+                .then(() => {
+                    //TODO: refresh tree
+                });
         }
     });
 }

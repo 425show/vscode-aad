@@ -43,6 +43,11 @@ export class MsalMementoCache {
             this.store.setValue("msal-cache", cacheContext.tokenCache.serialize());
         }
     };
+
+    public async clearCache() {
+        console.debug("clearing memento cache...");
+        this.store.setValue("msal-cache", null);
+    }
 }
 
 export class MsalAuthenticator {
@@ -55,6 +60,8 @@ export class MsalAuthenticator {
     private homeAccountId: string | undefined;
 
     public client: PublicClientApplication;
+
+    public cacheRef: MsalMementoCache;
 
     // for handling a single instance of the handler, use getInstance() elsewhere
     static instance?: MsalAuthenticator;
@@ -69,9 +76,12 @@ export class MsalAuthenticator {
     //msal logout
     public async Logout() {
         console.debug("logging out...");
-        const redirectUrl = await vscode.env.asExternalUri(vscode.Uri.parse(`${vscode.env.uriScheme}://${PUBLISHER_NAME}.${EXTENSION_NAME}/logout`));
-        var logoutUri = `https://login.microsoftonline.com/common/oauth2/v2.0/logout?${redirectUrl}`;
-        await vscode.env.openExternal(vscode.Uri.parse(logoutUri));
+        var msalInstance = MsalAuthenticator.getInstance();
+        msalInstance.cacheRef.clearCache();
+
+        // const redirectUrl = await vscode.env.asExternalUri(vscode.Uri.parse(`${vscode.env.uriScheme}://${PUBLISHER_NAME}.${EXTENSION_NAME}/logout`));
+        // var logoutUri = `https://login.microsoftonline.com/common/oauth2/v2.0/logout?${redirectUrl}`;
+        // await vscode.env.openExternal(vscode.Uri.parse(logoutUri));
     }
 
     public async StartLogin(): Promise<void> {
@@ -96,7 +106,11 @@ export class MsalAuthenticator {
     }
 
     public async EndLogin(uriData: vscode.Uri): Promise<string> {
+        console.debug("endLogin called");
         var code = uriData.query.split('code=')[1].split('&')[0];
+        console.debug(`code: ${code}`);
+        console.debug(`verifier: ${this.pkceCodes.verifier}`);
+
         var token = await this.client.acquireTokenByCode({
             scopes: MSAL_SCOPES.scopes,
             code: code,
@@ -104,7 +118,9 @@ export class MsalAuthenticator {
             redirectUri: `${vscode.env.uriScheme}://${PUBLISHER_NAME}.${EXTENSION_NAME}/auth-end`
         });
         this.homeAccountId = token?.account?.homeAccountId;
-        return token ? token.accessToken : "";
+        if (!token) throw new Error("no token returned");
+
+        return token.accessToken;
     }
 
     public async GetAccessToken(scopes?: string[]) {
@@ -120,7 +136,7 @@ export class MsalAuthenticator {
                 account: homeAccount,
                 scopes: scopes ? scopes : MSAL_SCOPES.scopes
             });
-            return tokenResult?.accessToken;
+            return tokenResult?.accessToken; //Do not return an empty string if it's empty
         } catch (ex) {
             console.error("no accounts, login first");
             return;
@@ -150,6 +166,7 @@ export class MsalAuthenticator {
             config = {
                 ...MSAL_CONFIG, cache: { cachePlugin } // todo: why do i have to do this - the signatures look OK
             }
+            this.cacheRef = cache;
         } else {
             console.debug(`msalauthenticator private ctor; no cache`);
             config = MSAL_CONFIG;

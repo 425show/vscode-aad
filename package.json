@@ -1,5 +1,5 @@
 {
-    "name": "vscode-azuread-explorer",
+    "name": "vscode-aad-explorer",
     "publisher": "425show",
     "displayName": "Microsoft Identity Platform explorer",
     "description": "Add Azure Active Directory authentication to your app",
@@ -175,9 +175,9 @@
     },
     "extensionDependencies": [],
     "dependencies": {
+        "@azure/arm-resources": "^4.2.2",
         "@azure/msal-node": "^1.3.3",
         "@microsoft/microsoft-graph-client": "^3.0.1",
-        "azure-arm-resource": "^7.4.0",
         "isomorphic-fetch": "^3.0.0",
         "ms-rest": "^2.5.4",
         "ms-rest-azure": "^3.0.1"
