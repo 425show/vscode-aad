@@ -1,5 +1,6 @@
 import { ExtensionContext } from "vscode";
 import { MsalAuthenticator } from "../authentication";
+import { registerCreateAppCommand } from "./create";
 import { registerDeleteAppCommand } from "./delete";
 import { registerLoginCommand } from "./login";
 import { registerLogoutCommand } from "./logout";
@@ -10,4 +11,5 @@ export function registerCommands(context: ExtensionContext, msal: MsalAuthentica
     registerLoginCommand(context);
     registerDeleteAppCommand(context, msal);
     registerLogoutCommand(context, msal);
+    registerCreateAppCommand(context, msal);
 }

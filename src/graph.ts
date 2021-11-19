@@ -79,6 +79,33 @@ export async function deleteRedirectUri(accessToken: string, appId: string, redi
         .patch(webApp);
 }
 
+export async function createAppRegistration(accessToken: string, appName: string, redirectUri: string, audience: string): Promise<MicrosoftGraph.Application> {
+    const client = getAuthenticatedClient(accessToken);
+    let appRegistration: MicrosoftGraph.Application = {
+        displayName: appName,
+        description: "Created by VS Code Azure AD Extension",
+        signInAudience: getAudience(audience),
+        spa: {
+            redirectUris: [redirectUri]
+        },
+        requiredResourceAccess: [   // Required resource access for the app registration to access the resources in the Azure AD tenant
+            {
+                resourceAppId: "00000003-0000-0000-c000-000000000000",
+                resourceAccess: [
+                    {
+                        id: "a42657d6-7f20-40e3-b6f0-cee03008a62a",
+                        type: "Scope"
+                    }]
+            }]
+    }
+
+    await client
+        .api('/applications')
+        .post(appRegistration);
+
+    return appRegistration;
+}
+
 export async function updateRedirectUri(accessToken: string, appId: string, oldUri: string, newUri: string) {
     const client = getAuthenticatedClient(accessToken);
     var spaApp = await getSpaAppForAppRegistration(accessToken, appId);
@@ -117,4 +144,19 @@ function removeRedirectUriFromSpaApp(spaApp: MicrosoftGraph.WebApplication, uriT
         }
     }
     return spaApp;
+}
+
+function getAudience(audience: string): string {
+    switch (audience) {
+        case "Single Tenant":
+            return "AzureADMyOrg";
+        case "Multitenant":
+            return "AzureADMultipleOrgs";
+        case "Multitenant & Personal Accounts":
+            return "AzureADandPersonalMicrosoftAccount";
+        case "Personal Accounts Only":
+            return "PersonalMicrosoftAccount";
+        default:
+            return "AzureADMyOrg";
+    }
 }
