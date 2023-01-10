@@ -176,7 +176,7 @@
     "extensionDependencies": [],
     "dependencies": {
         "@azure/arm-resources": "^4.2.2",
-        "@azure/msal-node": "^1.3.3",
+        "@azure/msal-node": "^1.14.6",
         "@microsoft/microsoft-graph-client": "^3.0.1",
         "isomorphic-fetch": "^3.0.0",
         "ms-rest": "^2.5.4",
